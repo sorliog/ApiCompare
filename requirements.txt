@@ -1,0 +1,5 @@
+requests~=2.32.5
+dotenv~=0.9.9
+python-dotenv~=1.2.1
+deepdiff~=8.6.1
+termcolor~=3.2.0
