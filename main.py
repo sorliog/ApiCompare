@@ -11,13 +11,6 @@ MAX_DIFF_PRINT_LENGTH = 50
 ROWSET_NESTED_DIFF_REGEX_PATTERN = r"root\[\'RowSet\'\]\[\'Row\']\[\d+\]"
 
 
-# api_a_headers = None
-# api_b_headers = {
-#     "AccountNumber": "14120",
-#     "UserId": "14120",
-#     "Cookie": "JSESSIONID=jsession1",
-#     "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJKU2Vzc2lvbklEIjoianNlc3Npb24xIiwic3ViIjoiMTQxMjAiLCJpYXQiOjE3NjI1MjQ0MzUsImV4cCI6MTc2MjUyODAzNX0.C3yJUAEviz0r3lAzSH3b35F7Yl24dlxW_4tREhyLCiU"
-# }
 
 
 def get_headers_from_env(api_key):
