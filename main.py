@@ -261,8 +261,8 @@ def compare_apis(csv_file, api_a_headers, api_b_headers, minimal_output=False, v
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument("-?", "-h", "--help", action="help", help="show this help message and exit")
-parser.add_argument("-m", "--minimal", help="Minimal output.", action=argparse.BooleanOptionalAction)
-parser.add_argument("-v", "--verbose", help="Verbose output ie Show detailed changes). Overrides --minimal",
+parser.add_argument("-m", "--minimal", help="Minimal output mode (only show whether responses differ).", action=argparse.BooleanOptionalAction)
+parser.add_argument("-v", "--verbose", help="Verbose mode (show full nested JSON differences). Overrides --minimal.",
                     action=argparse.BooleanOptionalAction)
 parser.add_argument("csv_file", help="CSV file that contains URLS and methods for calls.")
 args = parser.parse_args()

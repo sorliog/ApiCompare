@@ -15,6 +15,11 @@ pairs of API endpoints and methods (GET, POST, etc.).
     * Type changes
     * Moved dictionary items
     * Differences in nested lists
+
+* Flexible output modes:
+    * Minimal → Just shows if APIs differ.
+    * Verbose → Displays deep nested differences.
+* Uses environment-based header management via .env for secure configuration.
 * Outputs a detailed comparison report, including:
     * Total API calls
     * Identical vs different responses
@@ -24,15 +29,66 @@ pairs of API endpoints and methods (GET, POST, etc.).
 ## Requirements
 
 * Python 3.x
-* `requests` library for HTTP requests
-* `deepdiff` library for deep comparison of JSON objects
-* `termcolor` library for colored terminal output
+* `requests`
+* `dotenv`
+* `python-dotenv`
+* `deepdiff`
+* `termcolor`
+  You can install the required dependencies using pip:
 
-You can install the required dependencies using pip:
+You can install python using `winget` or the [official website](https://www.python.org/downloads/)
+
+* With `winget `
+  ```bash
+  winget install Python.Python.3.14 
+  ```
+  or
+* Download and Install the Python Interpreter from https://www.python.org/downloads/. Make sure the version is above Python3.
+
+# Installation
+
+1. **Clone or download the repository:**
 
 ```bash
-pip install requests deepdiff termcolor
+git clone https://github.com/sorliog/ApiCompare
+cd ApiCompare
 ```
+
+2. **Install dependencies:**
+
+```bash
+pip install -r requirements.txt
+```
+
+3. **Create a .env file in the same directory as the script.**
+
+```bash
+touch .env
+```
+
+4. **Configure you environment (see Next Section)**
+
+# Environment Configuration (.env)
+
+The script loads HTTP headers for each API from environment variables in your .env file.
+The headers should follow this format:
+
+```txt
+api_a.headers.AccountNumber=123456
+api_a.headers.UserId=myuser
+api_a.headers.Cookie="session_cookie_value"
+api_a.headers.Authorization="Bearer token123"
+
+api_b.headers.AccountNumber=123456
+api_b.headers.UserId=myuser
+api_b.headers.Cookie="session_cookie_value"
+api_b.headers.Authorization="Bearer token456"
+
+```
+
+> **Tip:**
+> The prefix must be lowercase (api_a.headers. or api_b.headers.), but the script automatically converts it to uppercase
+> internally.
 
 ## Usage
 
@@ -50,6 +106,9 @@ https://api.example.com/data,GET,https://api.another.com/data,GET
 https://api.example.com/create,POST,https://api.another.com/create,POST
 ```
 
+> **Tip:** Lines beginning with # are ignored as comments.
+>
+
 2. **Run the script**: From the command line, execute the script by providing the path to the CSV file as an argument.
 
 ```bash
@@ -61,6 +120,14 @@ Example:
 ```bash
 python main.py endpoints.csv
 ```
+
+## Optional Arguments
+
+| Flag                 | Description                                                              |
+|----------------------|--------------------------------------------------------------------------|
+| `-?`, `-h`, `--help` | Show help message.                                                       |
+| `-m`, `--minimal`    | Minimal output mode (only show whether responses differ).                |
+| `-v`, `--verbose`    | Verbose mode (show full nested JSON differences). Overrides `--minimal`. |
 
 3. **View the output**: The script will print a detailed comparison report to the console. It will show:
 
