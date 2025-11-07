@@ -1,0 +1,21 @@
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/reportsService/Action!getAcctSummaryInfoExecute?CompanyID=01&CustomerID=14120, GET,https://staging-smithservices.smithdrug.com:8443/reports/accountSummaryInfo/01/ArReport,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=ALL&Limit=20&Offset=0,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/ALL/0/20,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=SHORT_DATED&Offset=0&Limit=1,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/SHORT_DATED/0/1,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=NEW&Offset=0&Limit=1,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/NEW/0/1,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/accountListService/Action!getCustomerInfoExecute?CustomerID=14120,GET,https://staging-smithservices.smithdrug.com:8443/accounts/getCustomerInfo,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=SPECIAL&Offset=0&Limit=25,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/SPECIAL/0/25,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=SHORT_DATED&Limit=20&Offset=0,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/SHORT_DATED/0/20,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=ALL&Limit=20&Offset=0,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/ALL/0/20,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=BRAND&Offset=0&Limit=20,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/BRAND/0/20,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=SPECIAL&Offset=0&Limit=1,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/SPECIAL/0/25,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getLastOrderExecute?CustomerID=14120&Location=01&CustomerCategory=IRX&CustomerSubCategory=NCA,GET,https://staging-smithservices.smithdrug.com:8443/orders/getLastOrder/01/IRX/NCA,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=BRANDS&Offset=0&Limit=1,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/BRANDS/0/1,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getVerifyOrderExecute?CustomerID=14120&OrderID=11333816,GET,https://staging-smithservices.smithdrug.com:8443/orders/verifyOrder/11333816,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=OTC&Offset=0&Limit=1,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/OTC/0/1,GET
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getPODetailExecute?CustomerID=14120&Location=01&OrderID=11333816&CustomerCategory=IRX&CustomerSubCategory=NCA,GET,https://staging-smithservices.smithdrug.com:8443/orders/getPODetail/01/11333816/14120,GET
+
+
+
+
+
+

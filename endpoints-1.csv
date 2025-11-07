@@ -1,0 +1,4 @@
+https://staging-irx.smithdrug.com/SDCWebServices/webengine/com/smithdrug/services/portalOrdersService/Action!getIRxItemsExecute?CustomerID=14120&ItemType=ALL&Limit=20&Offset=0,GET,https://staging-smithservices.smithdrug.com:8443/orders/getIrxItems/ALL/0/20,GET
+
+
+
