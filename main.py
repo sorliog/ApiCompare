@@ -3,14 +3,13 @@ from dotenv import load_dotenv
 import requests
 import csv
 from deepdiff import DeepDiff
+from deepdiff.helper import SetOrdered
 from termcolor import colored
 import re
 import os
 
 MAX_DIFF_PRINT_LENGTH = 50
 ROWSET_NESTED_DIFF_REGEX_PATTERN = r"root\[\'RowSet\'\]\[\'Row\']\[\d+\]"
-
-
 
 
 def get_headers_from_env(api_key):
@@ -41,20 +40,18 @@ def get_closing_chars_from_string(value):
     return "".join(stack)
 
 
-def print_diff_summary(diff, minimal_output=False):
+def print_diff_summary(diff, minimal_output=False, verbose_output=False, indent=0):
     """
     Prints a readable summary of the differences between two JSON files.
     Takes a DeepDiff object as input.
     """
     if not diff:
-        print(colored("The two files are identical!", 'green'))
+        print(colored(f"{'    ' * indent}The two files are identical!", 'green'))
         return
 
-    if minimal_output:
-        print(colored("The two files are different!", 'red'))
+    if minimal_output and not verbose_output:
+        print(colored(f"{'    ' * indent}The two files are different!", 'red'))
         return
-
-    print(colored("\nSummary of differences:", 'yellow'))
 
     if "values_changed" in diff and "root['RowSet']['Row'][0]" in diff['values_changed']:
         matching_strings = []
@@ -65,24 +62,38 @@ def print_diff_summary(diff, minimal_output=False):
             matching_strings = matching_strings + [s for s in diff['iterable_item_added'] if
                                                    re.search(ROWSET_NESTED_DIFF_REGEX_PATTERN, s)]
         if len(matching_strings) > 0:
-            print(colored("\nDetected differing nested list structures in ", 'red') + colored("root['RowSet']['Row']",
-                                                                                              'yellow'))
+            print(colored(f"\n{'    ' * indent}Detected differing nested list structures in ", 'red') + colored(
+                "root['RowSet']['Row']",
+                'yellow'))
 
     # Added keys
     if 'dictionary_item_added' in diff:
-        print(colored("\nAdded keys:", 'green'))
-        for item, value in diff['dictionary_item_added'].items():
-            print(f"  - {colored(item, 'blue')}: {value}")
+        print(colored(f"\n{'    ' * indent}Added keys:", 'green'))
+        added_items = diff['dictionary_item_added']
+
+        # If it's a set, just iterate over its items (paths)
+        if isinstance(added_items, set) or isinstance(added_items, list) or isinstance(added_items, SetOrdered):
+            for item in added_items:
+                print(f"{'    ' * indent}  - {colored(item, 'blue')}")
+
+        # If it's a dict, iterate over key/value pairs
+        elif isinstance(added_items, dict):
+            for item, value in added_items.items():
+                print(f"{'    ' * indent}  - {colored(item, 'blue')}: {value}")
+
+        # (Optional) Catch other types just in case
+        else:
+            print(f"{'    ' * indent}  - Unexpected type: {type(added_items)}")
 
     # Removed keys
     if 'dictionary_item_removed' in diff:
-        print(colored("\nRemoved keys:", 'red'))
+        print(colored(f"\n{'    ' * indent}Removed keys:", 'red'))
         for item in diff['dictionary_item_removed']:
-            print(f"  - {colored(item, 'red')}")
+            print(f"{'    ' * indent}  - {colored(item, 'red')}")
 
     # Changed values
     if 'values_changed' in diff:
-        print(colored("\nChanged values:", 'magenta'))
+        print(colored(f"\n{'    ' * indent}Changed values:", 'magenta'))
         for item, change in diff['values_changed'].items():
             old_value = str(change['old_value'])
             new_value = str(change['new_value'])
@@ -93,14 +104,22 @@ def print_diff_summary(diff, minimal_output=False):
                 new_value = new_value[:MAX_DIFF_PRINT_LENGTH] + '... ' + get_closing_chars_from_string(new_value)
 
             print(
-                f"  - {colored(item, 'yellow')} changed from {colored(old_value, 'red')} to {colored(new_value, 'green')}")
+                f"{'    ' * indent}  - {colored(item, 'yellow')} changed from {colored(old_value, 'red')} to {colored(new_value, 'green')}")
+
+            if type(change['old_value']) is dict and type(
+                    change['new_value']) is dict and indent < 1 and verbose_output:
+                deeper_diff = compare_json(change['old_value'], change['new_value'])
+                if deeper_diff is not None:
+                    print(colored(f"\n{'    ' * indent}Detailed changes:", 'magenta'))
+                    print_diff_summary(deeper_diff, minimal_output=minimal_output, verbose_output=verbose_output,
+                                       indent=indent + 1)
 
     # Type changes (if any)
     if 'type_changes' in diff:
         print(colored("\nType changes:", 'cyan'))
         for item, change in diff['type_changes'].items():
             print(
-                f"  - {colored(item, 'white')}: type changed from {colored(change['old_type'], 'red')} to {colored(change['new_type'], 'green')}")
+                f"{'    ' * indent}  - {colored(item, 'white')}: type changed from {colored(change['old_type'], 'red')} to {colored(change['new_type'], 'green')}")
 
     # Dictionary item moved (if any)
     if 'dictionary_item_moved' in diff:
@@ -121,7 +140,7 @@ def print_diff_summary(diff, minimal_output=False):
 
 
 def print_comparison_report(differences, total_calls, error_calls, identical_count, different_count,
-                            minimal_output=False):
+                            minimal_output=False, verbose_output=False):
     # Print the final comparison report in a clean, structured format
     print("\n" + colored("Comparison Report", 'yellow'))
     print(f"Total calls made: {colored(total_calls, 'cyan')}")
@@ -129,13 +148,13 @@ def print_comparison_report(differences, total_calls, error_calls, identical_cou
     print(f"Identical JSON responses: {colored(identical_count, 'green')}")
     print(f"Different JSON responses: {colored(different_count, 'red')}")
 
-    if different_count > 0:
-        if not minimal_output:
-            print(colored("\nDifferences found:", 'yellow'))
-        for diff in differences:
-            print(
-                f"\n{colored(diff['api_a_endpoint'], 'blue')} ({colored(diff['api_a_method'], 'blue')}) vs {colored(diff['api_b_endpoint'], 'blue')} ({colored(diff['api_b_method'], 'blue')})")
-            print_diff_summary(diff['differences'], minimal_output=minimal_output)
+    if not minimal_output or verbose_output:
+        print(colored("\nDifferences found:", 'yellow'))
+    for diff in differences:
+        print(
+            f"\n{colored(diff['api_a_endpoint'], 'blue')} ({colored(diff['api_a_method'], 'blue')}) vs {colored(diff['api_b_endpoint'], 'blue')} ({colored(diff['api_b_method'], 'blue')})")
+        print_diff_summary(diff['differences'], minimal_output=minimal_output, verbose_output=verbose_output)
+        print("-" * 100)
 
 
 # Function to make API request and fetch the JSON data
@@ -170,12 +189,15 @@ def compare_json(json_a, json_b):
 def read_csv(file_name):
     with open(file_name, mode='r') as file:
         reader = csv.reader(file)
-        endpoints = [row for row in reader]
+        endpoints = []
+        for row in reader:
+            if row is not None and len(row) > 0 and not row[0].strip().startswith("#"): # Ignore comments
+                endpoints.append(row)
     return endpoints
 
 
 # Main function to perform the comparison
-def compare_apis(csv_file, api_a_headers, api_b_headers, minimal_output=False):
+def compare_apis(csv_file, api_a_headers, api_b_headers, minimal_output=False, verbose_output=False):
     # Read the CSV file containing the endpoint pairs and methods
     endpoints = read_csv(csv_file)
 
@@ -222,17 +244,26 @@ def compare_apis(csv_file, api_a_headers, api_b_headers, minimal_output=False):
                 })
             else:
                 identical_count += 1
+                differences.append({
+                    "api_a_endpoint": api_a_endpoint,
+                    "api_b_endpoint": api_b_endpoint,
+                    "api_a_method": api_a_method,
+                    "api_b_method": api_b_method,
+                    "differences": None
+                })
         else:
             error_calls += 1
             print(f"Skipping comparison for {api_a_endpoint} and {api_b_endpoint} due to error in fetching responses")
 
     print_comparison_report(differences, total_calls, error_calls, identical_count, different_count,
-                            minimal_output=minimal_output)
+                            minimal_output=minimal_output, verbose_output=verbose_output)
 
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument("-?", "-h", "--help", action="help", help="show this help message and exit")
 parser.add_argument("-m", "--minimal", help="Minimal output.", action=argparse.BooleanOptionalAction)
+parser.add_argument("-v", "--verbose", help="Verbose output ie Show detailed changes). Overrides --minimal",
+                    action=argparse.BooleanOptionalAction)
 parser.add_argument("csv_file", help="CSV file that contains URLS and methods for calls.")
 args = parser.parse_args()
 
@@ -240,4 +271,5 @@ api_a_headers = get_headers_from_env("api_a")
 api_b_headers = get_headers_from_env("api_b")
 
 csv_file = args.csv_file
-compare_apis(csv_file, api_a_headers, api_b_headers, minimal_output=args.minimal == True)
+compare_apis(csv_file, api_a_headers, api_b_headers, minimal_output=args.minimal == True,
+             verbose_output=args.verbose == True)
